@@ -34,7 +34,8 @@ jobs:
       with:
         cmd: install
 
-    - uses: actions/cache@v1
+    - name: Cache Ruby Gems
+      uses: actions/cache@v1
       with:
         path: vendor/bundle
         key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
