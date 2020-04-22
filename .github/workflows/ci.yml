@@ -17,7 +17,8 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
     - name: Setup Ruby 2.6.5
       uses: ruby/setup-ruby@v1
@@ -28,9 +29,17 @@ jobs:
       run: |
         sudo apt-get -yqq install libpq-dev
 
-    - uses: borales/actions-yarn@v2.0.0
+    - name: Install Yarn
+      uses: borales/actions-yarn@v2.0.0
       with:
         cmd: install
+
+    - uses: actions/cache@v1
+      with:
+        path: vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
 
     - name: Build App
       env:
@@ -38,6 +47,7 @@ jobs:
         RAILS_ENV: test
       run: |
         gem install bundler
+        bundle config path vendor/bundle
         bundle install --jobs 4 --retry 3
         bundle exec rails db:setup
 
